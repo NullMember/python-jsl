@@ -1,21 +1,33 @@
 import ctypes
 import ctypes.util
 import os
+import platform
 
 _jsl = None
+_extension = ''
+_system = platform.system()
+
+if _system == 'Windows':
+    _extension = '.dll'
+elif _system == 'Linux':
+    _extension = '.so'
+elif _system == 'Darwin':
+    _extension = '.dylib'
+else:
+    raise Exception('Your system is not known')
 
 # This will search JoyShockLibrary.dll in your PATH or
 # directory of your script.
-DLLPATH = ctypes.util.find_library('JoyShockLibrary.dll')
+DLLPATH = ctypes.util.find_library('JoyShockLibrary' + _extension)
 if DLLPATH != None:
     _jsl = ctypes.cdll.LoadLibrary(DLLPATH)
 else:
-    DLLPATH = './JoyShockLibrary.dll'
+    DLLPATH = './JoyShockLibrary' + _extension
     if os.path.exists(DLLPATH):
         try:
             _jsl = ctypes.cdll.LoadLibrary(DLLPATH)
         except:
-            raise Exception('JoyShockLibrary.dll Not Found')
+            raise Exception('JoyShockLibrary' + _extension + ' Not Found')
 
 JS_TYPE_JOYCON_LEFT = 1
 JS_TYPE_JOYCON_RIGHT = 2
